@@ -44,5 +44,38 @@ if [ ! -d libevent ]; then
   svn co http://src.chromium.org/svn/trunk/src/third_party/libevent
 fi
 
+if [ ! -d zlib ]; then
+  svn co http://src.chromium.org/svn/trunk/src/third_party/zlib
+fi
+
 cd ..
-./build/gyp_chromium base/base.gyp
+mkdir -p chrome/common
+if [ ! -f chrome/common/zip.cc ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/chrome/common/zip.cc > chrome/common/zip.cc
+fi
+
+if [ ! -f chrome/common/zip.h ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/chrome/common/zip.h > chrome/common/zip.h
+fi
+
+mkdir -p net/base
+if [ ! -f net/base/net_errors.h ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/net_errors.h > net/base/net_errors.h
+fi
+if [ ! -f net/base/net_error_list.h ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/net_error_list.h > net/base/net_error_list.h
+fi
+if [ ! -f net/base/completion_callback.h ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/completion_callback.h > net/base/completion_callback.h
+fi
+if [ ! -f net/base/file_stream.h ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/file_stream.h > net/base/file_stream.h
+fi
+if [ ! -f net/base/file_stream_posix.cc ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/file_stream_posix.cc > net/base/file_stream_posix.cc
+fi
+if [ ! -f net/base/file_stream_win.cc ]; then
+  svn cat http://src.chromium.org/svn/trunk/src/net/base/file_stream_win.cc > net/base/file_stream_win.cc
+fi
+
+./build/gyp_chromium ichc.gyp
