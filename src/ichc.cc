@@ -17,6 +17,9 @@
 #include "base/string_util.h"
 #include "chrome/common/zip.h"
 
+#if defined(OS_WIN)
+#pragma comment(lib, "Crypt32.lib")
+#endif
 
 namespace {
 
@@ -202,11 +205,11 @@ bool SignZip(const FilePath& zip_path,
       error_message->assign("Unable to sign extension.");
       return false;
     }
-    zip_handle.Close();
-
-    signature_creator->Final(signature);
-    return true;
   }
+  zip_handle.Close();
+
+  signature_creator->Final(signature);
+  return true;
 }
 
 bool WriteCRX(const FilePath& zip_path,
@@ -270,21 +273,27 @@ bool ValidateInput(int argc,
                    bool* generate_key,
                    bool* show_help,
                    std::string* error_message) {
-  CommandLine command_line(argc, argv);
+  CommandLine::Init(argc, argv);
+  CommandLine* command_line = CommandLine::ForCurrentProcess();
 
-  if (command_line.HasSwitch("help")) {
+  if (command_line->HasSwitch("help")) {
     *show_help = true;
     return true;
   }
 
-  *key_path = command_line.GetSwitchValuePath("key");
-  *crx_path = command_line.GetSwitchValuePath("output");
-  if (argc - command_line.GetSwitchCount() <= 1) {
+  *key_path = command_line->GetSwitchValuePath("key");
+  *crx_path = command_line->GetSwitchValuePath("output");
+  if (argc - command_line->GetSwitchCount() <= 1) {
     error_message->assign("No input directory specified.");
     return false;
   }
 
+#if defined(OS_WIN)
+  std::vector<std::wstring> loose_values = command_line->GetLooseValues();
+  *ext_path = FilePath(loose_values[0]);
+#else
   *ext_path = FilePath(argv[argc - 1]);
+#endif
 
   if (crx_path->empty())
     *crx_path = ext_path->ReplaceExtension(FILE_PATH_LITERAL(".crx"));

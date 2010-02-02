@@ -48,6 +48,16 @@ if [ ! -d zlib ]; then
   svn co http://src.chromium.org/svn/trunk/src/third_party/zlib
 fi
 
+# windows only
+if [ ! -d nss ]; then
+  svn co http://src.chromium.org/svn/trunk/deps/third_party/nss
+fi
+
+# windows only
+if [ ! -d sqlite ]; then
+  svn co http://src.chromium.org/svn/trunk/src/third_party/sqlite
+fi
+
 cd ..
 mkdir -p chrome/common
 if [ ! -f chrome/common/zip.cc ]; then
